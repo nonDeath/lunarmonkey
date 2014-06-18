@@ -78,7 +78,7 @@ return array(
 	|
 	*/
 
-	'key' => '00YxvPGbaq2MgEOiPnVxVdRL187jgLH9',
+	'key' => 'QIUQ0hpKhCR8YE6Ujska3CzqLPIBYoXJ',
 
 	'cipher' => MCRYPT_RIJNDAEL_128,
 
@@ -121,6 +121,7 @@ return array(
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
+		'Way\Generators\GeneratorsServiceProvider'
 
 	),
 
