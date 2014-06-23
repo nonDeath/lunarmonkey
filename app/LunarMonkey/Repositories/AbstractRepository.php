@@ -1,7 +1,10 @@
 <?php namespace LunarMonkey\Repositories;
 
+
 use StdClass;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\MessageBag;
+use Illuminate\Support\Str;
 use LunarMonkey\Validation\Validable;
 
 abstract class AbstractRepository {
@@ -15,6 +18,18 @@ abstract class AbstractRepository {
      * @var Illuminate\Support\MessageBag
      */
     protected $errors;
+
+    /**
+     * @var array
+     */
+    protected $attributes;
+
+    /**
+     * Purgeable elements
+     *
+     * @var array
+     */
+    protected static $purgeable = array();
 
     /**
      * Construct
@@ -54,7 +69,7 @@ abstract class AbstractRepository {
      * @param  array   $data
      * @return boolean
      */
-    public function isValid($name, array $data)
+    public function checkValidationRules($name, array $data)
     {
         if($this->validators[$name]->with($data)->passes())
         {
@@ -154,5 +169,35 @@ abstract class AbstractRepository {
     public function errors()
     {
         return $this->errors;
+    }
+
+    /**
+     * Purge Unneeded elemntes
+     *
+     * @return void
+     */
+    protected function purgeUnneeded()
+    {
+        $clean = array();
+        foreach ($this->attributes as $key => $value)
+        {
+            if (! Str::endsWith($key, '_confirmation') && ! Str::startsWith($key, '_') && ! in_array($key, static::$purgeable) && trim($value) != '')
+                $clean[$key] = $value;
+        }
+        $this->attributes = $clean;
+    }
+
+    /**
+     * Autohash password
+     *
+     * @return void
+     */
+    protected function autoHash()
+    {
+        if (isset($this->attributes['password']))
+        {
+            if ($this->attributes['password'] != $this->model->getOriginal('password'))
+                $this->attributes['password'] = Hash::make($this->attributes['password']);
+        }
     }
 }

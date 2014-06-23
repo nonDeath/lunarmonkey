@@ -35,24 +35,34 @@ class EloquentUserRepository extends AbstractRepository implements Repository, C
      */
     public function create(array $data)
     {
-        if($this->checkValidationRules('create', $data))
+        $this->attributes = $data;
+
+        $password  = $data["password"];
+        $send_pass = isset($data["send_pass"])?1:0;
+        $activate  = $data["activate"];
+        unset($data);
+
+        if($this->checkValidationRules('create', $this->attributes))
         {
-            $password = $data['password'];
+            $this->purgeUnneeded();
+            $this->autoHash();
 
-            $data = $this->autoHash($data);
-            $data = $this->purgeUnneeded($data);
+            $user = $this->model->create($this->attributes);
 
-            return $this->model->create($data);
-
-            if($data["send_pass"])
+            if($user)
             {
-                // Send welcome email and password
+                if($send_pass)
+                {
+                    // Send Welcome and Password email
+                }
+
+                if(! $activate)
+                {
+                    // Send Activation email
+                }
             }
-            if(! $data["activated"])
-            {
-                // ... send Activation Code Email
-                // example: Register
-            }
+
+            return $user;
         }
     }
 
@@ -64,23 +74,16 @@ class EloquentUserRepository extends AbstractRepository implements Repository, C
      */
     public function update(array $data)
     {
-        $b = true;
-        if(isset($data['password']) && !empty($data['password']))
-        {
-            $b = $this->checkValidationRules('update_password', $data);
-            $data['password'] = Hash::make($data['password']);
-        }
+        $this->attributes = $data;
 
-        if($this->checkValidationRules('update', $data) && $b)
+        if($this->checkValidationRules('update', $this->attributes))
         {
-            $user = $this->find($data['id']);
-            $user->username = $data['username'];
-            $user->email = $data['email'];
+            $this->purgeUnneeded();
+            $this->autoHash();
 
-            if(isset($data['password']) && !empty($data['password']))
-            {
-                $user->password = $data['password'];
-            }
+            $user = $this->find($this->attributes['id']);
+
+            $user->fill($this->attributes);
             $user->save();
 
             return $user;

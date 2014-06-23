@@ -20,19 +20,23 @@ class CreateUsersTable extends Migration {
 			$table->string('email');
 			$table->string('first_name')->nullable();
 			$table->string('last_name')->nullable();
+			$table->string('display_name')->nullable();
 			$table->text('description')->nullable();
 			$table->string('url')->nullable();
 			$table->string('fb_profile')->nullable();
 			$table->string('tw_profile')->nullable();
 			$table->string('gp_profile')->nullable();
 			$table->string('gravatar_email')->nullable();
-			$table->string('capabilities')->nullable();
 			$table->boolean('activate')->nullable()->default(0);
 			$table->timestamp('activated_at')->nullable();
 			$table->string('activation_code')->nullable();
 			$table->string('reset_password_code')->nullable();
 			$table->timestamp('last_login')->nullable();
+			$table->integer('role_id')->unsigned();
 			$table->timestamps();
+
+			$table->foreign("role_id")
+					->references("id")->on("roles");
 		});
 	}
 

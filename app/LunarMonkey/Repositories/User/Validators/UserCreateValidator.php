@@ -1,4 +1,4 @@
-<?php namespace LunarMonkey\Repositories\User;
+<?php namespace LunarMonkey\Repositories\User\Validators;
 
 use LunarMonkey\Validators\Validable;
 use LunarMonkey\Validators\LaravelValidator;

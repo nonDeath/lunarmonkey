@@ -87,4 +87,14 @@ abstract class AbstractUserDecorator {
     {
         return $this->user->getBy($key, $value, $with);
     }
+
+    /**
+     * Errors from validation
+     *
+     * @return Illuminate\Support\MeesageBag
+     */
+    public function errors()
+    {
+        return $this->user->errors;
+    }
 }

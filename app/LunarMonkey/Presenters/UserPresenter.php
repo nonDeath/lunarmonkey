@@ -10,7 +10,12 @@ class UserPresenter extends AbstractPresenter implements Presentable {
    */
   public function created_at()
   {
-    return $this->object->created_at->format('Y-m-d');
+    return $this->object->created_at->format('d/m/Y');
+  }
+
+  public function name()
+  {
+    return $this->object->first_name. ' ' . $this->object->last_name;
   }
 
 }
