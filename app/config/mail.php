@@ -15,7 +15,7 @@ return array(
 	|
 	*/
 
-	'driver' => 'smtp',
+	'driver' => 'mandrill',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -28,7 +28,8 @@ return array(
 	|
 	*/
 
-	'host' => 'smtp.mailgun.org',
+	'host' => 'smtp.gmail.com',
+	//'host' => 'smtp.mandrillapp.com',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -54,7 +55,7 @@ return array(
 	|
 	*/
 
-	'from' => array('address' => null, 'name' => null),
+	'from' => array('address' => 'matiasgaratortiz@gmail.com', 'name' => 'Matias Garat Ortiz'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -80,7 +81,7 @@ return array(
 	|
 	*/
 
-	'username' => null,
+	'username' => 'matiasgaratortiz@gmail.com',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -93,7 +94,8 @@ return array(
 	|
 	*/
 
-	'password' => null,
+	'password' => 'oaprjgcvtmfkqkkh', //Gmail
+	//'password' => '8m4lvEZaVLkKjSBg7G0Arw',
 
 	/*
 	|--------------------------------------------------------------------------

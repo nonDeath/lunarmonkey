@@ -29,6 +29,7 @@ class UsersController extends \BaseController {
 	 */
 	public function index()
 	{
+		Log::info('Ingreso al Index');
 		$page = Input::get('page', 1);
 
 		$data = $this->user->getByPage($page, 15);

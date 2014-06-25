@@ -1,12 +1,15 @@
 <?php namespace LunarMonkey\Repositories\User;
 
 use Hash;
+use Illuminate\Events\Dispatcher;
 use LunarMonkey\Repositories\Crudable;
 use Illuminate\Support\MessageBag;
 use LunarMonkey\Repositories\Paginable;
 use LunarMonkey\Repositories\Repository;
 use Illuminate\Database\Eloquent\Model;
 use LunarMonkey\Repositories\AbstractRepository;
+use LunarMonkey\Repositories\User\Validators\UserCreateValidator;
+use Log;
 
 class EloquentUserRepository extends AbstractRepository implements Repository, Crudable, Paginable, UserRepository {
 
@@ -16,15 +19,24 @@ class EloquentUserRepository extends AbstractRepository implements Repository, C
     protected $model;
 
     /**
+     * The events dispatcher
+     *
+     * @var Illuminate\Events\Dispatcher
+     */
+    protected $events;
+
+    /**
      * Construct
      *
      * @param Illuminate\Database\Eloquent\Model $user
      */
-    public function __construct(Model $model)
+    public function __construct(Model $model, Dispatcher $events)
     {
         parent::__construct(new MessageBag);
 
         $this->model = $model;
+
+        $this->events = $events;
     }
 
     /**
@@ -35,30 +47,36 @@ class EloquentUserRepository extends AbstractRepository implements Repository, C
      */
     public function create(array $data)
     {
+        Log::info('Ingreso a: EloquentUserRepository@create');
         $this->attributes = $data;
 
-        $password  = $data["password"];
-        $send_pass = isset($data["send_pass"])?1:0;
-        $activate  = $data["activate"];
+        $password  = $data['password'];
+        //$send_pass = isset($data['send_pass'])?1:0;
+        $send_pass = 1;
+        $activate  = $data['activate'];
         unset($data);
 
-        if($this->checkValidationRules('create', $this->attributes))
+        if($this->isValid('create', $this->attributes))
         {
             $this->purgeUnneeded();
             $this->autoHash();
 
             $user = $this->model->create($this->attributes);
 
+            Log::info('Usuario es valido');
             if($user)
             {
+                Log::info('Pasa IF');
                 if($send_pass)
                 {
-                    // Send Welcome and Password email
+                    Log::info('Pasa send');
+                    $this->events->fire('user.welcome', [$user]);
+                    Log::info('Pasa Evento');
                 }
 
                 if(! $activate)
                 {
-                    // Send Activation email
+                    $this->events->fire('user.activation', [$user]);
                 }
             }
 
@@ -75,13 +93,17 @@ class EloquentUserRepository extends AbstractRepository implements Repository, C
     public function update(array $data)
     {
         $this->attributes = $data;
+        unset($data);
 
-        if($this->checkValidationRules('update', $this->attributes))
+        if($this->isValid('update', $this->attributes))
         {
             $this->purgeUnneeded();
             $this->autoHash();
 
             $user = $this->find($this->attributes['id']);
+
+            if(trim($this->attributes['password']) == '')
+                unset($this->attributes['password']);
 
             $user->fill($this->attributes);
             $user->save();

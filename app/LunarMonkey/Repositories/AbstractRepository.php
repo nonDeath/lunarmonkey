@@ -69,7 +69,7 @@ abstract class AbstractRepository {
      * @param  array   $data
      * @return boolean
      */
-    public function checkValidationRules($name, array $data)
+    public function isValid($name, array $data)
     {
         if($this->validators[$name]->with($data)->passes())
         {
@@ -181,7 +181,7 @@ abstract class AbstractRepository {
         $clean = array();
         foreach ($this->attributes as $key => $value)
         {
-            if (! Str::endsWith($key, '_confirmation') && ! Str::startsWith($key, '_') && ! in_array($key, static::$purgeable) && trim($value) != '')
+            if (! Str::endsWith($key, '_confirmation') && ! Str::startsWith($key, '_') && ! in_array($key, static::$purgeable))
                 $clean[$key] = $value;
         }
         $this->attributes = $clean;
