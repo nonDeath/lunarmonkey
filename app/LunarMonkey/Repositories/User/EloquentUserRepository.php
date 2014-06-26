@@ -1,6 +1,6 @@
 <?php namespace LunarMonkey\Repositories\User;
 
-use Hash;
+use User;
 use Illuminate\Events\Dispatcher;
 use LunarMonkey\Repositories\Crudable;
 use Illuminate\Support\MessageBag;
@@ -9,7 +9,6 @@ use LunarMonkey\Repositories\Repository;
 use Illuminate\Database\Eloquent\Model;
 use LunarMonkey\Repositories\AbstractRepository;
 use LunarMonkey\Repositories\User\Validators\UserCreateValidator;
-use Log;
 
 class EloquentUserRepository extends AbstractRepository implements Repository, Crudable, Paginable, UserRepository {
 
@@ -30,7 +29,7 @@ class EloquentUserRepository extends AbstractRepository implements Repository, C
      *
      * @param Illuminate\Database\Eloquent\Model $user
      */
-    public function __construct(Model $model, Dispatcher $events)
+    public function __construct(User $model, Dispatcher $events)
     {
         parent::__construct(new MessageBag);
 
@@ -47,7 +46,6 @@ class EloquentUserRepository extends AbstractRepository implements Repository, C
      */
     public function create(array $data)
     {
-        Log::info('Ingreso a: EloquentUserRepository@create');
         $this->attributes = $data;
 
         $password  = $data['password'];
@@ -63,15 +61,11 @@ class EloquentUserRepository extends AbstractRepository implements Repository, C
 
             $user = $this->model->create($this->attributes);
 
-            Log::info('Usuario es valido');
             if($user)
             {
-                Log::info('Pasa IF');
                 if($send_pass)
                 {
-                    Log::info('Pasa send');
                     $this->events->fire('user.welcome', [$user]);
-                    Log::info('Pasa Evento');
                 }
 
                 if(! $activate)

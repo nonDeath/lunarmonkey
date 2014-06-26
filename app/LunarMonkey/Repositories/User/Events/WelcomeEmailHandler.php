@@ -1,7 +1,7 @@
 <?php  namespace LunarMonkey\Repositories\User\Events;
 
 use Illuminate\Mail\Mailer;
-use Log;
+
 class WelcomeEmailHandler {
 
     /**
@@ -20,12 +20,11 @@ class WelcomeEmailHandler {
     public function __construct(Mailer $mailer)
     {
         $this->mailer = $mailer;
-        Log::info('Ingreso al constructor');
+
     }
 
     public function handle($user)
     {
-        Log::info('Ingreso al handle');
         die("hello world!");
     }
 
@@ -38,7 +37,6 @@ class WelcomeEmailHandler {
     public function subscribe($events)
     {
         $events->listen('user.welcome', 'LunarMonkey\Repositories\User\Events\WelcomeEmailHandler');
-        Log::info('Ingreso al subscriber');
     }
 
 }
