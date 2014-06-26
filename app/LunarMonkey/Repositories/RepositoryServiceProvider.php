@@ -10,17 +10,15 @@ use LunarMonkey\Repositories\User\Validators\UserUpdateValidator;
 use LunarMonkey\Repositories\User\Validators\UserUpdatePasswordValidator;
 use LunarMonkey\Repositories\User\EloquentUserRepository;
 use LunarMonkey\Repositories\User\Events\WelcomeEmailHandler;
-use Log;
+
 
 class RepositoryServiceProvider extends ServiceProvider {
 
     public function boot()
     {
-        Log::info('Ingreso a boot');
         $this->app->events->subscribe(new WelcomeEmailHandler(
             $this->app['mailer'])
           );
-        Log::info('Sale boot');
     }
 
     /**
@@ -41,7 +39,7 @@ class RepositoryServiceProvider extends ServiceProvider {
     {
         $this->app->bind("LunarMonkey\Repositories\User\UserRepository", function($app)
         {
-            $repository = new EloquentUserRepository( new User, new Dispatcher );
+            $repository = new EloquentUserRepository( new User, $app['events'] );
 
             $repository->registerValidator('create', new UserCreateValidator($app['validator']));
             $repository->registerValidator('update', new UserUpdateValidator($app['validator']));
